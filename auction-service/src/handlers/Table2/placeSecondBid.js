@@ -1,19 +1,19 @@
 import AWS from 'aws-sdk';
 import createError from 'http-errors';
 import validator from '@middy/validator';
-import { getAuctionById } from './getAuction';
-import commonMiddleware from '../lib/commonMiddleware';
-import placeBidSchema from '../lib/schemas/placeBidSchema';
+import { getSecondAuctionById } from './getSecondAuction';
+import commonMiddleware from '../../lib/commonMiddleware';
+import placeBidSchema from '../../lib/schemas/placeBidSchema';
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
-async function placeBid(event, context) {
+async function placeSecondBid(event, context) {
     const { id } = event.pathParameters;
     const { amount } = event.body;
     const { email } = event.requestContext.authorizer;
 
 
-    const auction = await getAuctionById(id);
+    const auction = await getSecondAuctionById(id);
 
     //Bid identity validation
     if(email===auction.seller){
@@ -36,7 +36,7 @@ async function placeBid(event, context) {
     }
 
     const params = {
-        TableName: process.env.AUCTIONS_TABLE_NAME,
+        TableName: process.env.SECOND_TABLE_NAME,
         Key: { id },
         UpdateExpression: 'set highestBid.amount = :amount, highestBid.bidder = :bidder',
         ExpressionAttributeValues: {
@@ -62,5 +62,5 @@ async function placeBid(event, context) {
     };
 }
 
-export const handler = commonMiddleware(placeBid)
+export const handler = commonMiddleware(placeSecondBid)
     .use(validator({ inputSchema: placeBidSchema }));

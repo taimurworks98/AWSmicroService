@@ -12,50 +12,85 @@ provider:
   region: eu-west-1
   environment:
     AUCTIONS_TABLE_NAME: ${self:custom.AuctionsTable.name}
+    SECOND_TABLE_NAME: ${self:custom.SecondTable.name}
     MAIL_QUEUE_URL: ${self:custom.MailQueue.url}
   iamRoleStatements:
     - ${file(iam/AuctionsTableIAM.yml):AuctionsTableIAM}
+    - ${file(iam/SecondTableIAM.yml):SecondTableIAM}
     - ${file(iam/MailQueueIAM.yml):MailQueueIAM}
 
 resources:
   Resources:
     AuctionsTable: ${file(resources/AuctionsTable.yml):AuctionsTable}
+    SecondTable: ${file(resources/SecondTable.yml):SecondTable}
   
 functions:
   createAuction:
-    handler: src/handlers/createAuction.handler
+    handler: src/handlers/Table1/createAuction.handler
     events:
       - http:
           method: POST
-          path: /auction
+          path: /createAuction
+          authorizer: ${self:custom.authorizer}
+
+  createSecondAuction:
+    handler: src/handlers/Table2/createSecondAuction.handler
+    events:
+      - http:
+          method: POST
+          path: /createSecondAuction
           authorizer: ${self:custom.authorizer}
 
   getAuctions:
-    handler: src/handlers/getAuctions.handler
+    handler: src/handlers/Table1/getAuctions.handler
     events:
       - http:
           method: GET
           path: /auctions
           authorizer: ${self:custom.authorizer}
 
+  getSecondAuctions:
+    handler: src/handlers/Table2/getSecondAuctions.handler
+    events:
+      - http:
+          method: GET
+          path: /secondAuctions
+          authorizer: ${self:custom.authorizer}
+
   getAuction:
-    handler: src/handlers/getAuction.handler
+    handler: src/handlers/Table1/getAuction.handler
     events:
       - http:
           method: GET
           path: /auction/{id}
           authorizer: ${self:custom.authorizer}
 
+  getSecondAuction:
+    handler: src/handlers/Table2/getSecondAuction.handler
+    events:
+      - http:
+          method: GET
+          path: /secondAuction/{id}
+          authorizer: ${self:custom.authorizer}
+
   placeBid:
-    handler: src/handlers/placeBid.handler
+    handler: src/handlers/Table1/placeBid.handler
     events:
       - http:
           method: PATCH
           path: /auction/{id}/bid
           authorizer: ${self:custom.authorizer}
 
+  placeSecondBid:
+    handler: src/handlers/Table2/placeSecondBid.handler
+    events:
+      - http:
+          method: PATCH
+          path: /secondAuction/{id}/bid
+          authorizer: ${self:custom.authorizer}
+
   processAuctions:
-    handler: src/handlers/processAuctions.handler
+    handler: src/handlers/Table1/processAuctions.handler
     events:
       - schedule: rate(1 minute)
 
@@ -64,6 +99,9 @@ custom:
   AuctionsTable:
     name: !Ref AuctionsTable
     arn: !GetAtt AuctionsTable.Arn
+  SecondTable:
+    name: !Ref SecondTable
+    arn: !GetAtt SecondTable.Arn
   MailQueue:
     arn: ${cf:notification-service-${self:provider.stage}.MailQueueArn}
     url: ${cf:notification-service-${self:provider.stage}.MailQueueUrl}

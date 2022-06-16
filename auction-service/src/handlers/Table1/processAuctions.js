@@ -1,6 +1,6 @@
 import createError from 'http-errors';
-import { getEndedAuctions } from '../lib/getEndedAuctions';
-import { closeAuction } from '../lib/closeAuction';
+import { getEndedAuctions } from '../../lib/getEndedAuctions';
+import { closeAuction } from '../../lib/closeAuction';
 
 async function processAuctions(event, context) {
   try {

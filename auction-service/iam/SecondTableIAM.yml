@@ -1,0 +1,11 @@
+SecondTableIAM:
+  Effect: Allow
+  Action:
+    - dynamodb:PutItem
+    - dynamodb:Scan
+    - dynamodb:GetItem
+    - dynamodb:UpdateItem
+    - dynamodb:Query
+  Resource:
+    - ${self:custom.SecondTable.arn}
+    - !Join ['/', [ '${self:custom.SecondTable.arn}', 'index', 'statusAndEndDate' ]]
