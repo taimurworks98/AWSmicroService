@@ -57,6 +57,14 @@ functions:
           path: /secondAuctions
           authorizer: ${self:custom.authorizer}
 
+  batchAuctions:
+    handler: src/handlers/Batch/batchAuctions.handler
+    events:
+      - http:
+          method: GET
+          path: /batchAuctions
+          authorizer: ${self:custom.authorizer}
+
   getAuction:
     handler: src/handlers/Table1/getAuction.handler
     events:

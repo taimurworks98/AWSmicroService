@@ -6,6 +6,7 @@ SecondTableIAM:
     - dynamodb:GetItem
     - dynamodb:UpdateItem
     - dynamodb:Query
+    - dynamodb:BatchGet*
   Resource:
     - ${self:custom.SecondTable.arn}
     - !Join ['/', [ '${self:custom.SecondTable.arn}', 'index', 'statusAndEndDate' ]]
