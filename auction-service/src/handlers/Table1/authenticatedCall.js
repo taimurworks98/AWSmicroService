@@ -1,5 +1,4 @@
 import AWS from 'aws-sdk';
-import isAuthenticated from '../../lib/config/auth'
 import commonMiddleware from '../../lib/commonMiddleware';
 import { ResponseCodesEnum } from '../../lib/config/res';
 import { sendResponse, errReturned } from '../../lib/config/dto';
@@ -16,4 +15,3 @@ async function authenticatedCall(event, context) {
 }
 
 export const handler = commonMiddleware(authenticatedCall)
-// .use(isAuthenticated(authenticatedCall));
