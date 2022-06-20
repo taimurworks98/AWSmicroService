@@ -3,56 +3,55 @@ import createError from 'http-errors';
 import validator from '@middy/validator';
 import commonMiddleware from '../../lib/commonMiddleware';
 import getAuctionsSchema from '../../lib/schemas/getAuctionsSchema';
+import { sendResponse,errReturned } from '../../lib/config/dto';
+import { SUCCESS, BADREQUEST} from '../../lib/config/res'
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function batchAuctions(event, context) {
-    let auctions;
+    try {
 
-    var params = {
-        RequestItems: {
-            'AuctionsTable': {
-                Keys: [
-                    { 'id': '4565c71d-f2b6-49c3-b2b5-7cf3198f91fa', 'seller': 'taimoormalik@softtik.com' },
-                ],
-                ProjectionExpression: 'id, title, highestBid, seller, createdAt, endingAt'
-            },
-            'SecondTable': {
-                Keys: [
-                    { 'id': '39de02ce-b976-4119-903a-a9b6c4a955d0', 'seller': 'taimoormalik@softtik.com' },
-                ],
-                ProjectionExpression: 'id, title, highestBid, seller, createdAt, endingAt'
+        // let auctions;
+
+        console.log("************************ before params");
+
+        var params = {
+            'RequestItems': {
+                'AuctionsTable-dev': {
+                    'Keys': [
+                        {
+                            'id': '3039e83f-4cde-4699-91d2-f5b715d5d89b'
+                        },
+                    ],
+                },
+                'SecondTable-dev': {
+                    'Keys': [
+                        {
+                            'id': '7562b24e-95b4-4326-8ae7-c1cb5b9a2c54'
+                        },
+                    ],
+                }
             }
-        }
-    };
-    dynamodb.batchGet(params, function (err, data) {
-        if (err) {
-            console.log(`Error: ${err}`);
-        } else {
-            auctions = data;
-            console.log(data);
-            data.Responses.AuctionsTable.forEach(function (e, i, a) {
-                console.log(e);
-            });
-            data.Responses.SecondTable.forEach(function (e, i, a) {
-                console.log(e);
-            });
-        }
-    });
-    // try {
-    //     const result = await dynamodb.batchGet(params).promise();
-    //     auctions = result.Items;
-    // } catch (error) {
-    //     console.error(error);
-    //     throw new createError.InternalServerError(error);
-    // }
+        };
 
+        console.log("************************ after params");
 
-    return {
-        statusCode: 200,
-        body: auctions,
-    };
+        let result = await dynamodb.batchGet(params).promise();
+        console.log("************************ result", result);
+
+        if (result)
+            return sendResponse(SUCCESS, "Get Batch Successful", result);
+        else
+            return sendResponse(BADREQUEST, "Get Batch Unsuccessful", []);
+
+    } catch (error) {
+
+        console.error(error);
+        throw new createError.InternalServerError(error);
+
+    }
+
 }
 
-export const handler = commonMiddleware(batchAuctions)
-    .use(validator({ inputSchema: getAuctionsSchema, useDefaults: true }));
+export const handler = commonMiddleware(batchAuctions);
+    // .use(validator({ inputSchema: getAuctionsSchema, useDefaults: true }));

@@ -6,7 +6,8 @@ AuctionsTableIAM:
     - dynamodb:GetItem
     - dynamodb:UpdateItem
     - dynamodb:Query
-    - dynamodb:BatchGet*
+    - dynamodb:BatchGetItem
+    - dynamodb:batchWriteItem
   Resource:
     - ${self:custom.AuctionsTable.arn}
     - !Join ['/', [ '${self:custom.AuctionsTable.arn}', 'index', 'statusAndEndDate' ]]
