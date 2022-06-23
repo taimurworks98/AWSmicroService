@@ -23,7 +23,7 @@ jobs:
     - name: serverless deploy
       uses: serverless/github-action@master
       with:
-        args: sls deploy
+        args: serverless deploy --verbose
         # args: -c "serverless deploy --config serverless.yml"
         # args: -c "cd ../../auth-service && serverless deploy --config serverless.yml"
         # args: -c "cd ../../notification-service && serverless deploy --config serverless.yml"
