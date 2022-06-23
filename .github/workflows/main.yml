@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        stages:
+          - stage: 'dev'
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         node-version: [12.x]
     steps:
 
@@ -24,7 +28,7 @@ jobs:
       uses: serverless/github-action@master
       with:
         # args: serverless deploy --verbose
-        args: -c "cd auction-service && serverless plugin install -n serverless-bundle && serverless deploy --config serverless.yml"
+        args: -c "cd auction-service && serverless plugin install -n serverless-bundle && serverless deploy --config serverless.yml --stage=${{ matrix.stages.stage }} --verbose"
         entrypoint: /bin/sh
         # args: -c "cd ../../auth-service && serverless deploy --config serverless.yml"
         # args: -c "cd ../../notification-service && serverless deploy --config serverless.yml"
