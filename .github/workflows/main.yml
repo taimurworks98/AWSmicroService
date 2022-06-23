@@ -23,9 +23,9 @@ jobs:
     - name: serverless deploy
       uses: serverless/github-action@master
       with:
-        args: serverless deploy --verbose
+        # args: serverless deploy --verbose
+        args: -c "cd auction-service/serverless deploy --config serverless.yml"
         entrypoint: /bin/sh
-        # args: -c "serverless deploy --config serverless.yml"
         # args: -c "cd ../../auth-service && serverless deploy --config serverless.yml"
         # args: -c "cd ../../notification-service && serverless deploy --config serverless.yml"
       env:
