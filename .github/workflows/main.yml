@@ -13,12 +13,12 @@ jobs:
       matrix:
         stages:
           - stage: 'dev'
-        node-version: [16.x]
+        node-version: [12.x]
     steps:
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
 
@@ -26,7 +26,7 @@ jobs:
       uses: serverless/github-action@master
       with:
         # args: serverless deploy --verbose
-        args: -c "cd auction-service && serverless plugin install -n serverless-bundle && serverless deploy --config serverless.yml --stage=${{ matrix.stages.stage }} --verbose"
+        args: -c "cd auction-service && npm i && serverless plugin install -n serverless-bundle && serverless deploy --config serverless.yml --stage=${{ matrix.stages.stage }} --verbose"
         entrypoint: /bin/sh
         # args: -c "cd ../../auth-service && serverless deploy --config serverless.yml"
         # args: -c "cd ../../notification-service && serverless deploy --config serverless.yml"
